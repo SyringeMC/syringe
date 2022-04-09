@@ -1,4 +1,4 @@
-English | [日本語](/blob/main/.github/README-ja.md)
+English | [日本語](/.github/README-ja.md)
 
 # Syringe
 
