@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "id": "testmod",
+  "version": "1.0-SNAPSHOT",
+  "name": "Syringe Test Mod",
+  "description": "",
+  "license": "Apache-2.0",
+  "environment": "client",
+  "entrypoints": {
+    "main": [
+      "org.syringemc.testmod.TestMod"
+    ]
+  }
+}

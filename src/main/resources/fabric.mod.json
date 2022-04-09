@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "id": "syringe",
+  "version": "${version}",
+  "name": "Syringe",
+  "description": "// TODO",
+  "icon": "assets/syringe/icon.png",
+  "license": "Apache-2.0",
+  "environment": "client",
+  "accessWidener": "syringe.accesswidener",
+  "authors": [
+    "SyringeMC"
+  ],
+  "contact": {
+    "sources": "https://github.com/SyringeMC/syringe",
+    "issues": "https://github.com/SyringeMC/syringe/issues"
+  },
+  "entrypoints": {
+    "main": [
+      "org.syringemc.SyringeMod"
+    ]
+  },
+  "mixins": [
+    "syringe.mixins.json"
+  ],
+  "depends": {
+    "minecraft": ">=1.18",
+    "fabricloader": ">=0.11.6"
+  }
+}

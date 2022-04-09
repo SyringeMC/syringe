@@ -1,0 +1,13 @@
+accessWidener v1 named
+
+# MultilineText/Line
+accessible field net/minecraft/client/font/MultilineText$Line text Lnet/minecraft/text/OrderedText;
+accessible field net/minecraft/client/font/MultilineText$Line width I
+accessible method net/minecraft/client/font/MultilineText$Line <init> (Lnet/minecraft/text/OrderedText;I)V
+
+# GameOptions
+mutable field net/minecraft/client/option/GameOptions allKeys [Lnet/minecraft/client/option/KeyBinding;
+
+# KeyBinding
+accessible field net/minecraft/client/option/KeyBinding boundKey Lnet/minecraft/client/util/InputUtil$Key;
+mutable field net/minecraft/client/option/KeyBinding boundKey Lnet/minecraft/client/util/InputUtil$Key;

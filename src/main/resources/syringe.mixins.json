@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "org.syringemc.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [
+    "accessor.KeyBindingRegistryImplAccessor",
+    "keybinding.MixinGameOptions",
+    "message.MixinInGameHud"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
