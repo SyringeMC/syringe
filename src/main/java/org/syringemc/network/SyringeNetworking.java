@@ -5,16 +5,20 @@ import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
+import net.minecraft.client.option.Perspective;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
+import org.syringemc.SyringeMod;
 import org.syringemc.keybinding.KeyBindingManager;
 import org.syringemc.keybinding.KeyCode;
 import org.syringemc.keybinding.SyringeKeyBinding;
 import org.syringemc.message.MessageContext;
 import org.syringemc.message.MessageInstance;
 import org.syringemc.message.MessagePosition;
+import org.syringemc.util.ExtendedGameOptions;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,6 +31,8 @@ public final class SyringeNetworking {
     public static final Identifier MESSAGE_DISCARD_ID = new Identifier(NAMESPACE, "message/discard");
     public static final Identifier MESSAGE_CLEAR_ID = new Identifier(NAMESPACE, "message/clear");
     public static final Identifier KEYBINDING_REGISTER_ID = new Identifier(NAMESPACE, "keybinding/register");
+    public static final Identifier PERSPECTIVE_SET_ID = new Identifier(NAMESPACE, "perspective/set");
+    public static final Identifier PERSPECTIVE_LOCK_ID = new Identifier(NAMESPACE, "perspective/lock");
 
     // C2S
     public static final Identifier HANDSHAKE_ID = new Identifier(NAMESPACE, "handshake");
@@ -41,6 +47,8 @@ public final class SyringeNetworking {
         ClientPlayNetworking.registerGlobalReceiver(MESSAGE_DISCARD_ID, SyringeNetworking::discardMessage);
         ClientPlayNetworking.registerGlobalReceiver(MESSAGE_CLEAR_ID, SyringeNetworking::clearMessages);
         ClientPlayNetworking.registerGlobalReceiver(KEYBINDING_REGISTER_ID, SyringeNetworking::registerKeybindings);
+        ClientPlayNetworking.registerGlobalReceiver(PERSPECTIVE_SET_ID, SyringeNetworking::setPerspective);
+        ClientPlayNetworking.registerGlobalReceiver(PERSPECTIVE_LOCK_ID, SyringeNetworking::lockPerspective);
     }
 
     private static void displayMessage(MinecraftClient client, ClientPlayNetworkHandler handler, PacketByteBuf buf, PacketSender sender) {
@@ -80,6 +88,18 @@ public final class SyringeNetworking {
     private static void registerKeybindings(MinecraftClient client, ClientPlayNetworkHandler handler, PacketByteBuf buf, PacketSender sender) {
         buf.readList(buf1 -> new Pair<>(buf1.readIdentifier(), buf1.readEnumConstant(KeyCode.class)))
             .forEach(entry -> KeyBindingManager.register(new SyringeKeyBinding(entry.getLeft(), entry.getRight())));
+    }
+
+    private static void setPerspective(MinecraftClient client, ClientPlayNetworkHandler handler, PacketByteBuf buf, PacketSender sender) {
+        var id = buf.readInt();
+        Arrays.stream(Perspective.values())
+            .filter(p -> p.ordinal() == id)
+            .findFirst()
+            .ifPresent(p -> ((ExtendedGameOptions) client.options).setPerspective(p, true));
+    }
+
+    private static void lockPerspective(MinecraftClient client, ClientPlayNetworkHandler handler, PacketByteBuf buf, PacketSender sender) {
+        SyringeMod.isPerspectiveLocked = buf.readBoolean();
     }
 
     public static void sendKeyPressedPacket(SyringeKeyBinding keyBinding) {

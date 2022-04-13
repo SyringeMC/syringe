@@ -10,6 +10,8 @@ import org.syringemc.keybinding.KeyBindingManager;
 import org.syringemc.network.SyringeNetworking;
 
 public final class SyringeMod implements ModInitializer {
+    public static boolean isPerspectiveLocked = false;
+
     @Override
     public void onInitialize() {
         SaveDataManager.load();
@@ -24,5 +26,6 @@ public final class SyringeMod implements ModInitializer {
     private static void onDisconnected() {
         SyringeNetworking.MESSAGES.clear();
         KeyBindingManager.reset();
+        isPerspectiveLocked = false;
     }
 }

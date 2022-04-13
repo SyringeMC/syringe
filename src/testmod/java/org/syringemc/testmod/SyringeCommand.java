@@ -19,7 +19,7 @@ public final class SyringeCommand {
     }
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher, boolean dedicated) {
-        dispatcher.register(literal("syringe").then(message()));
+        dispatcher.register(literal("syringe").then(message()).then(perspective()));
     }
 
     // syringe message display <targets> <id> <message> <shadow> <size> <line height> <position> <offset x> <offset y> <fadein>
@@ -56,5 +56,27 @@ public final class SyringeCommand {
         message.then(discard);
         message.then(clear);
         return message;
+    }
+
+    // syringe perspective set <targets> <id>
+    // syringe perspective lock <targets> <boolean>
+    private static LiteralArgumentBuilder<ServerCommandSource> perspective() {
+        var perspective = literal("perspective");
+        var set = literal("set").then(argument("targets", EntityArgumentType.players()).then(argument("id", IntegerArgumentType.integer(0, 2)).executes(ctx -> {
+            var id = IntegerArgumentType.getInteger(ctx, "id");
+            var buf = PacketByteBufs.create();
+            buf.writeInt(id);
+            EntityArgumentType.getPlayers(ctx, "targets").forEach(player -> ServerPlayNetworking.send(player, SyringeNetworking.PERSPECTIVE_SET_ID, buf));
+            return id;
+        })));
+        var lock = literal("lock").then(argument("targets", EntityArgumentType.players()).then(argument("lock", BoolArgumentType.bool()).executes(ctx -> {
+            var buf = PacketByteBufs.create();
+            buf.writeBoolean(BoolArgumentType.getBool(ctx, "lock"));
+            EntityArgumentType.getPlayers(ctx, "targets").forEach(player -> ServerPlayNetworking.send(player, SyringeNetworking.PERSPECTIVE_LOCK_ID, buf));
+            return 1;
+        })));
+        perspective.then(set);
+        perspective.then(lock);
+        return perspective;
     }
 }

@@ -6,7 +6,8 @@
   "mixins": [
     "accessor.KeyBindingRegistryImplAccessor",
     "keybinding.MixinGameOptions",
-    "message.MixinInGameHud"
+    "message.MixinInGameHud",
+    "perspective.MixinGameOptions"
   ],
   "injectors": {
     "defaultRequire": 1
