@@ -7,71 +7,81 @@ import net.fabricmc.fabric.impl.client.keybinding.KeyBindingRegistryImpl;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
+import org.jetbrains.annotations.NotNull;
 import org.syringemc.io.SaveDataManager;
 import org.syringemc.mixin.accessor.KeyBindingRegistryImplAccessor;
 import org.syringemc.network.SyringeNetworking;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 public final class KeyBindingManager {
-    private static final List<SyringeKeyBinding> KEY_BINDINGS = new ArrayList<>();
-    private static final HashMap<SyringeKeyBinding, Integer> LAST_PRESSED_TICK = new HashMap<>();
+    private static final Set<KeyBinding> KEY_BINDINGS = new HashSet<>();
+    private static final HashMap<KeyBinding, Integer> LAST_PRESSED_TICK = new HashMap<>();
 
     private KeyBindingManager() {
     }
 
     public static void setup() {
-        ClientTickEvents.END_CLIENT_TICK.register(client -> KEY_BINDINGS.forEach(keybinding -> {
+        ClientTickEvents.END_CLIENT_TICK.register(client -> {
             var server = MinecraftClient.getInstance().getServer();
             if (server == null) {
                 return;
             }
-            var ticks = MinecraftClient.getInstance().getServer().getTicks();
-            if (keybinding.isPressed()) {
-                if (1 < ticks - LAST_PRESSED_TICK.getOrDefault(keybinding, 0)) {
-                    pressed(keybinding);
+            KEY_BINDINGS.forEach(keybinding -> {
+                var ticks = MinecraftClient.getInstance().getServer().getTicks();
+                if (keybinding.isPressed()) {
+                    if (1 < ticks - LAST_PRESSED_TICK.getOrDefault(keybinding, 0)) {
+                        pressed(keybinding);
+                    }
+                    LAST_PRESSED_TICK.put(keybinding, ticks);
+                } else {
+                    var lastPressedTick = LAST_PRESSED_TICK.getOrDefault(keybinding, 0);
+                    if (0 < lastPressedTick) {
+                        released(keybinding);
+                        LAST_PRESSED_TICK.remove(keybinding);
+                    }
                 }
-                LAST_PRESSED_TICK.put(keybinding, ticks);
-            } else {
-                var lastPressedTick = LAST_PRESSED_TICK.getOrDefault(keybinding, 0);
-                if (0 < lastPressedTick) {
-                    released(keybinding);
-                    LAST_PRESSED_TICK.remove(keybinding);
-                }
-            }
-        }));
+            });
+        });
     }
 
-    public static void register(SyringeKeyBinding keybinding) {
-        KeyBindingHelper.registerKeyBinding(keybinding);
+    public static void register(@NotNull String translateKey, @NotNull KeyCode defaultKey) {
+        var keybinding = KeyBinding.KEYS_BY_ID.get(translateKey);
+        if (keybinding == null) {
+            keybinding = new SyringeKeyBinding(translateKey, defaultKey);
+        }
+        if (keybinding instanceof SyringeKeyBinding syringeKeybinding) {
+            KeyBindingHelper.registerKeyBinding(syringeKeybinding);
+            SaveDataManager.getInt(translateKey)
+                .ifPresent(code -> syringeKeybinding.setBoundKey(InputUtil.Type.KEYSYM.createFromCode(code), false));
+        }
+
         KEY_BINDINGS.add(keybinding);
         var client = MinecraftClient.getInstance();
         client.options.allKeys = KeyBindingRegistryImpl.process(client.options.allKeys);
-
-        SaveDataManager.getInt(keybinding.id.toString())
-            .ifPresent(code -> keybinding.setBoundKey(InputUtil.Type.KEYSYM.createFromCode(code), false));
-
         KeyBinding.updateKeysByCode();
     }
 
     public static void reset() {
         var client = MinecraftClient.getInstance();
         var newList = Lists.newArrayList(client.options.allKeys);
-        KEY_BINDINGS.forEach(keybinding -> {
-            newList.remove(keybinding);
-            KeyBindingRegistryImplAccessor.getModdedKeyBindings().remove(keybinding);
-        });
+        KEY_BINDINGS.stream()
+            .filter(keyBinding -> keyBinding instanceof SyringeKeyBinding)
+            .forEach(keyBinding -> {
+                newList.remove(keyBinding);
+                KeyBindingRegistryImplAccessor.getModdedKeyBindings().remove(keyBinding);
+            });
         KEY_BINDINGS.clear();
         client.options.allKeys = newList.toArray(new KeyBinding[0]);
     }
 
-    private static void pressed(SyringeKeyBinding keyBinding) {
+    private static void pressed(KeyBinding keyBinding) {
         SyringeNetworking.sendKeyPressedPacket(keyBinding);
     }
 
-    private static void released(SyringeKeyBinding keyBinding) {
+    private static void released(KeyBinding keyBinding) {
         SyringeNetworking.sendKeyReleasedPacket(keyBinding);
     }
 }

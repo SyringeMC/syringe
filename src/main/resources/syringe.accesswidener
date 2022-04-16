@@ -11,3 +11,4 @@ mutable field net/minecraft/client/option/GameOptions allKeys [Lnet/minecraft/cl
 # KeyBinding
 accessible field net/minecraft/client/option/KeyBinding boundKey Lnet/minecraft/client/util/InputUtil$Key;
 mutable field net/minecraft/client/option/KeyBinding boundKey Lnet/minecraft/client/util/InputUtil$Key;
+accessible field net/minecraft/client/option/KeyBinding KEYS_BY_ID Ljava/util/Map;

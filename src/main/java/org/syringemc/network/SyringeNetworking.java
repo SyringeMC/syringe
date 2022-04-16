@@ -5,6 +5,7 @@ import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
+import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.option.Perspective;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
@@ -12,7 +13,6 @@ import net.minecraft.util.Pair;
 import org.syringemc.SyringeMod;
 import org.syringemc.keybinding.KeyBindingManager;
 import org.syringemc.keybinding.KeyCode;
-import org.syringemc.keybinding.SyringeKeyBinding;
 import org.syringemc.message.MessageContext;
 import org.syringemc.message.MessageInstance;
 import org.syringemc.message.MessagePosition;
@@ -86,8 +86,11 @@ public final class SyringeNetworking {
     }
 
     private static void registerKeybindings(MinecraftClient client, ClientPlayNetworkHandler handler, PacketByteBuf buf, PacketSender sender) {
-        buf.readList(buf1 -> new Pair<>(buf1.readIdentifier(), buf1.readEnumConstant(KeyCode.class)))
-            .forEach(entry -> KeyBindingManager.register(new SyringeKeyBinding(entry.getLeft(), entry.getRight())));
+        buf.readList(buf1 -> {
+            var translateKey = buf1.readString();
+            var defaultKey = buf1.readEnumConstant(KeyCode.class);
+            return new Pair<>(translateKey, defaultKey);
+        }).forEach(pair -> KeyBindingManager.register(pair.getLeft(), pair.getRight()));
     }
 
     private static void setPerspective(MinecraftClient client, ClientPlayNetworkHandler handler, PacketByteBuf buf, PacketSender sender) {
@@ -102,15 +105,15 @@ public final class SyringeNetworking {
         SyringeMod.isPerspectiveLocked = buf.readBoolean();
     }
 
-    public static void sendKeyPressedPacket(SyringeKeyBinding keyBinding) {
+    public static void sendKeyPressedPacket(KeyBinding keyBinding) {
         var buf = PacketByteBufs.create();
-        buf.writeIdentifier(keyBinding.id);
+        buf.writeString(keyBinding.getTranslationKey());
         ClientPlayNetworking.send(KEYBINDING_PRESSED_ID, buf);
     }
 
-    public static void sendKeyReleasedPacket(SyringeKeyBinding keyBinding) {
+    public static void sendKeyReleasedPacket(KeyBinding keyBinding) {
         var buf = PacketByteBufs.create();
-        buf.writeIdentifier(keyBinding.id);
+        buf.writeString(keyBinding.getTranslationKey());
         ClientPlayNetworking.send(KEYBINDING_RELEASED_ID, buf);
     }
 }

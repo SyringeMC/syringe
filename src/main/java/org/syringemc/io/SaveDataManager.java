@@ -12,7 +12,6 @@ import java.util.Map;
 import java.util.Optional;
 
 public final class SaveDataManager {
-
     private static final String FILE_NAME = "syringe.json";
     private static final Gson GSON = new Gson();
     private static final Path CONFIG_DIR = FabricLoader.getInstance().getConfigDir();
