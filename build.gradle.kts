@@ -3,7 +3,7 @@ plugins {
 }
 
 group = "org.syringemc"
-version = "0.1.0+1.18"
+version = "0.1.0+1.19"
 
 tasks.getByName<ProcessResources>("processResources") {
     filesMatching("fabric.mod.json") {
@@ -30,17 +30,18 @@ fun DependencyHandlerScope.includeAndModImplementation(dep: Any) {
 }
 
 dependencies {
-    minecraft("com.mojang:minecraft:1.18.2")
-    mappings(group = "net.fabricmc", name = "yarn", version = "1.18.2+build.2", classifier = "v2")
-    modImplementation("net.fabricmc:fabric-loader:0.13.3")
+    minecraft("com.mojang:minecraft:1.19")
+    mappings(group = "net.fabricmc", name = "yarn", version = "1.19+build.4", classifier = "v2")
+    modImplementation("net.fabricmc:fabric-loader:0.14.8")
     arrayOf(
         "fabric-api-base",
+        "fabric-command-api-v2",
         "fabric-lifecycle-events-v1",
+        "fabric-registry-sync-v0",
         "fabric-resource-loader-v0",
         "fabric-key-binding-api-v1",
         "fabric-networking-api-v1",
-    ).forEach { includeAndModImplementation(fabricApi.module(it, "0.48.0+1.18.2")) }
-    modImplementation(fabricApi.module("fabric-command-api-v1", "0.48.0+1.18.2"))
+    ).forEach { includeAndModImplementation(fabricApi.module(it, "0.57.0+1.19")) }
 }
 
 loom {

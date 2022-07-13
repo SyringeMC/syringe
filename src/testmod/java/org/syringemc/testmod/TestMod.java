@@ -1,7 +1,7 @@
 package org.syringemc.testmod;
 
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 
 public final class TestMod implements ModInitializer {
     @Override

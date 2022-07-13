@@ -5,8 +5,10 @@ import com.mojang.brigadier.arguments.*;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.command.argument.TextArgumentType;
+import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import org.syringemc.command.argument.MessagePositionArgumentType;
 import org.syringemc.network.SyringeNetworking;
@@ -18,7 +20,7 @@ public final class SyringeCommand {
     private SyringeCommand() {
     }
 
-    public static void register(CommandDispatcher<ServerCommandSource> dispatcher, boolean dedicated) {
+    public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess registryAccess, CommandManager.RegistrationEnvironment environment) {
         dispatcher.register(literal("syringe").then(message()).then(perspective()));
     }
 

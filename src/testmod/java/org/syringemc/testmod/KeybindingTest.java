@@ -4,7 +4,7 @@ import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.NotNull;
 import org.syringemc.keybinding.KeyCode;
@@ -28,12 +28,12 @@ public final class KeybindingTest {
 
         ServerPlayNetworking.registerGlobalReceiver(SyringeNetworking.KEYBINDING_PRESSED_ID, (server, player, handler, buf, responseSender) -> {
             var id = buf.readString();
-            player.sendMessage(new LiteralText("Pressed: " + id), false);
+            player.sendMessage(Text.of("Pressed: " + id), false);
         });
 
         ServerPlayNetworking.registerGlobalReceiver(SyringeNetworking.KEYBINDING_RELEASED_ID, (server, player, handler, buf, responseSender) -> {
             var id = buf.readString();
-            player.sendMessage(new LiteralText("Released: " + id), false);
+            player.sendMessage(Text.of("Released: " + id), false);
         });
     }
 

@@ -7,7 +7,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
-import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import org.syringemc.message.MessagePosition;
 
 import java.util.ArrayList;
@@ -43,7 +43,7 @@ public class MessagePositionArgumentType implements ArgumentType<MessagePosition
         try {
             return MessagePosition.valueOf(string.toUpperCase());
         } catch (IllegalArgumentException e) {
-            throw new SimpleCommandExceptionType(new LiteralText(e.getMessage())).createWithContext(reader);
+            throw new SimpleCommandExceptionType(Text.of(e.getMessage())).createWithContext(reader);
         }
     }
 

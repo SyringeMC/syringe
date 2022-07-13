@@ -7,16 +7,17 @@ import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.StringVisitable;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
 public class SyringeMultilineText implements MultilineText {
-
     private final TextRenderer renderer;
     private final List<Line> lines;
+    private final int maxWidth;
 
-    public static final SyringeMultilineText EMPTY = new SyringeMultilineText(null, null) {
+    public static final SyringeMultilineText EMPTY = new SyringeMultilineText(null, Collections.emptyList()) {
         public int drawCenterWithShadow(MatrixStack matrices, int x, int y) {
             return y;
         }
@@ -50,6 +51,7 @@ public class SyringeMultilineText implements MultilineText {
     public SyringeMultilineText(TextRenderer renderer, List<Line> lines) {
         this.renderer = renderer;
         this.lines = lines;
+        this.maxWidth = lines.stream().mapToInt(line -> line.width).max().orElse(0);
     }
 
     @Override
@@ -107,6 +109,11 @@ public class SyringeMultilineText implements MultilineText {
     @Override
     public int count() {
         return lines.size();
+    }
+
+    @Override
+    public int getMaxWidth() {
+        return maxWidth;
     }
 
     public int maxWidth() {
