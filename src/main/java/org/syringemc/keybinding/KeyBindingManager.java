@@ -12,13 +12,12 @@ import org.syringemc.io.SaveDataManager;
 import org.syringemc.mixin.accessor.KeyBindingRegistryImplAccessor;
 import org.syringemc.network.SyringeNetworking;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
 public final class KeyBindingManager {
     private static final Set<KeyBinding> KEY_BINDINGS = new HashSet<>();
-    private static final HashMap<KeyBinding, Integer> LAST_PRESSED_TICK = new HashMap<>();
+    private static final Set<KeyBinding> PRESSING_KEYS = new HashSet<>();
 
     private KeyBindingManager() {
     }
@@ -30,17 +29,15 @@ public final class KeyBindingManager {
                 return;
             }
             KEY_BINDINGS.forEach(keybinding -> {
-                var ticks = MinecraftClient.getInstance().getServer().getTicks();
                 if (keybinding.isPressed()) {
-                    if (1 < ticks - LAST_PRESSED_TICK.getOrDefault(keybinding, 0)) {
+                    if (!PRESSING_KEYS.contains(keybinding)) {
+                        PRESSING_KEYS.add(keybinding);
                         pressed(keybinding);
                     }
-                    LAST_PRESSED_TICK.put(keybinding, ticks);
                 } else {
-                    var lastPressedTick = LAST_PRESSED_TICK.getOrDefault(keybinding, 0);
-                    if (0 < lastPressedTick) {
+                    if (PRESSING_KEYS.contains(keybinding)) {
+                        PRESSING_KEYS.remove(keybinding);
                         released(keybinding);
-                        LAST_PRESSED_TICK.remove(keybinding);
                     }
                 }
             });
