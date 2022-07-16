@@ -9,23 +9,34 @@ import dev.uten2c.syringe.message.MessageContext;
 import dev.uten2c.syringe.message.MessageInstance;
 import dev.uten2c.syringe.message.MessagePosition;
 import dev.uten2c.syringe.util.ExtendedGameOptions;
+import io.netty.util.concurrent.Future;
+import io.netty.util.concurrent.GenericFutureListener;
+import net.fabricmc.fabric.api.client.networking.v1.ClientLoginNetworking;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ClientLoginNetworkHandler;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.option.Perspective;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
+import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 
 public final class SyringeNetworking {
     private static final String NAMESPACE = "syringe";
+    private static final Logger LOGGER = LoggerFactory.getLogger(SyringeNetworking.class);
     public static final Map<String, MessageInstance> MESSAGES = new HashMap<>();
 
     // S2C
@@ -49,6 +60,7 @@ public final class SyringeNetworking {
     }
 
     public static void registerReceivers() {
+        ClientLoginNetworking.registerGlobalReceiver(HANDSHAKE_ID, SyringeNetworking::handshake);
         ClientPlayNetworking.registerGlobalReceiver(MESSAGE_DISPLAY_ID, SyringeNetworking::displayMessage);
         ClientPlayNetworking.registerGlobalReceiver(MESSAGE_DISCARD_ID, SyringeNetworking::discardMessage);
         ClientPlayNetworking.registerGlobalReceiver(MESSAGE_CLEAR_ID, SyringeNetworking::clearMessages);
@@ -59,6 +71,20 @@ public final class SyringeNetworking {
         ClientPlayNetworking.registerGlobalReceiver(CAMERA_ZOOM_ID, SyringeNetworking::zoom);
         ClientPlayNetworking.registerGlobalReceiver(HUD_HIDE_ID, SyringeNetworking::hudHide);
         ClientPlayNetworking.registerGlobalReceiver(HUD_SHOW_ID, SyringeNetworking::hudShow);
+    }
+
+    private static CompletableFuture<@Nullable PacketByteBuf> handshake(MinecraftClient client, ClientLoginNetworkHandler handler, PacketByteBuf buf, Consumer<GenericFutureListener<? extends Future<? super Void>>> listenerAdder) {
+        SyringeMod.isInSyringeServer = true;
+        //noinspection OptionalGetWithoutIsPresent
+        var metadata = FabricLoader.getInstance().getModContainer(NAMESPACE).get().getMetadata();
+        var version = metadata.getVersion().getFriendlyString();
+        var protocolStr = metadata.getCustomValue("syringe:protocol").getAsString();
+        var protocol = Integer.parseInt(protocolStr);
+        var buf1 = PacketByteBufs.create();
+        buf1.writeString(version);
+        buf1.writeInt(protocol);
+        LOGGER.info(String.format("Send handshake packet (version: %s, protocol: %d)", version, protocol));
+        return CompletableFuture.completedFuture(buf1);
     }
 
     private static void displayMessage(MinecraftClient client, ClientPlayNetworkHandler handler, PacketByteBuf buf, PacketSender sender) {

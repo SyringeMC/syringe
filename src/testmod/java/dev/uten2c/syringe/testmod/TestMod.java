@@ -8,5 +8,6 @@ public final class TestMod implements ModInitializer {
     public void onInitialize() {
         CommandRegistrationCallback.EVENT.register(SyringeCommand::register);
         KeybindingTest.startListener();
+        HandshakeTest.setup();
     }
 }
