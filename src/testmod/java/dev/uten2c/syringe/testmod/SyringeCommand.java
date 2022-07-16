@@ -21,7 +21,11 @@ public final class SyringeCommand {
     }
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess registryAccess, CommandManager.RegistrationEnvironment environment) {
-        dispatcher.register(literal("syringe").then(message()).then(perspective()));
+        dispatcher.register(literal("syringe")
+            .then(message())
+            .then(perspective())
+            .then(setCameraDirection())
+        );
     }
 
     // syringe message display <targets> <id> <message> <shadow> <size> <line height> <position> <offset x> <offset y> <fadein>
@@ -80,5 +84,17 @@ public final class SyringeCommand {
         perspective.then(set);
         perspective.then(lock);
         return perspective;
+    }
+
+    // syringe set_camera_direction <targets> <isRelative> <x> <y>
+    private static LiteralArgumentBuilder<ServerCommandSource> setCameraDirection() {
+        return literal("set_camera_direction").then(argument("targets", EntityArgumentType.players()).then(argument("relative", BoolArgumentType.bool()).then(argument("x", FloatArgumentType.floatArg()).then(argument("y", FloatArgumentType.floatArg()).executes(ctx -> {
+            var buf = PacketByteBufs.create();
+            buf.writeBoolean(BoolArgumentType.getBool(ctx, "relative"));
+            buf.writeFloat(FloatArgumentType.getFloat(ctx, "x"));
+            buf.writeFloat(FloatArgumentType.getFloat(ctx, "y"));
+            EntityArgumentType.getPlayers(ctx, "targets").forEach(player -> ServerPlayNetworking.send(player, SyringeNetworking.SET_CAMERA_DIRECTION_ID, buf));
+            return 1;
+        })))));
     }
 }

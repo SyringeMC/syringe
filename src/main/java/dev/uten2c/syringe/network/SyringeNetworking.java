@@ -33,6 +33,7 @@ public final class SyringeNetworking {
     public static final Identifier KEYBINDING_REGISTER_ID = new Identifier(NAMESPACE, "keybinding/register");
     public static final Identifier PERSPECTIVE_SET_ID = new Identifier(NAMESPACE, "perspective/set");
     public static final Identifier PERSPECTIVE_LOCK_ID = new Identifier(NAMESPACE, "perspective/lock");
+    public static final Identifier SET_CAMERA_DIRECTION_ID = new Identifier(NAMESPACE, "set_camera_direction");
 
     // C2S
     public static final Identifier HANDSHAKE_ID = new Identifier(NAMESPACE, "handshake");
@@ -49,6 +50,7 @@ public final class SyringeNetworking {
         ClientPlayNetworking.registerGlobalReceiver(KEYBINDING_REGISTER_ID, SyringeNetworking::registerKeybindings);
         ClientPlayNetworking.registerGlobalReceiver(PERSPECTIVE_SET_ID, SyringeNetworking::setPerspective);
         ClientPlayNetworking.registerGlobalReceiver(PERSPECTIVE_LOCK_ID, SyringeNetworking::lockPerspective);
+        ClientPlayNetworking.registerGlobalReceiver(SET_CAMERA_DIRECTION_ID, SyringeNetworking::setCameraDirection);
     }
 
     private static void displayMessage(MinecraftClient client, ClientPlayNetworkHandler handler, PacketByteBuf buf, PacketSender sender) {
@@ -103,6 +105,19 @@ public final class SyringeNetworking {
 
     private static void lockPerspective(MinecraftClient client, ClientPlayNetworkHandler handler, PacketByteBuf buf, PacketSender sender) {
         SyringeMod.isPerspectiveLocked = buf.readBoolean();
+    }
+
+    private static void setCameraDirection(MinecraftClient client, ClientPlayNetworkHandler handler, PacketByteBuf buf, PacketSender sender) {
+        var relative = buf.readBoolean();
+        var x = buf.readFloat();
+        var y = buf.readFloat();
+        var player = client.player;
+        if (player != null) {
+            var yaw = relative ? player.getYaw() : 0;
+            var pitch = relative ? player.getPitch() : 0;
+            player.setYaw(yaw + x);
+            player.setPitch(pitch + y);
+        }
     }
 
     public static void sendKeyPressedPacket(KeyBinding keyBinding) {
