@@ -8,16 +8,13 @@
   "license": "Apache-2.0",
   "environment": "client",
   "accessWidener": "syringe.accesswidener",
-  "authors": [
-    "SyringeMC"
-  ],
   "contact": {
-    "sources": "https://github.com/SyringeMC/syringe",
-    "issues": "https://github.com/SyringeMC/syringe/issues"
+    "sources": "https://github.com/uTen2c/syringe",
+    "issues": "https://github.com/uTen2c/syringe/issues"
   },
   "entrypoints": {
     "main": [
-      "org.syringemc.SyringeMod"
+      "dev.uten2c.syringe.SyringeMod"
     ]
   },
   "mixins": [

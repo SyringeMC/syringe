@@ -8,7 +8,7 @@
   "environment": "client",
   "entrypoints": {
     "main": [
-      "org.syringemc.testmod.TestMod"
+      "dev.uten2c.syringe.testmod.TestMod"
     ]
   }
 }

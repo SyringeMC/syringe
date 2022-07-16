@@ -2,7 +2,7 @@ plugins {
     id("fabric-loom") version "0.11-SNAPSHOT"
 }
 
-group = "org.syringemc"
+group = "dev.uten2c"
 version = "0.1.0+1.19"
 
 tasks.processResources {
