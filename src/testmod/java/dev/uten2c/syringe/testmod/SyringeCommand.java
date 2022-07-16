@@ -28,7 +28,7 @@ public final class SyringeCommand {
         dispatcher.register(literal("syringe")
             .then(message())
             .then(perspective())
-            .then(setCameraDirection())
+            .then(camera())
             .then(hud())
         );
     }
@@ -91,16 +91,25 @@ public final class SyringeCommand {
         return perspective;
     }
 
-    // syringe set_camera_direction <targets> <isRelative> <x> <y>
-    private static LiteralArgumentBuilder<ServerCommandSource> setCameraDirection() {
-        return literal("set_camera_direction").then(argument("targets", EntityArgumentType.players()).then(argument("relative", BoolArgumentType.bool()).then(argument("x", FloatArgumentType.floatArg()).then(argument("y", FloatArgumentType.floatArg()).executes(ctx -> {
+    // syringe camera set_direction <targets> <isRelative> <x> <y>
+    // syringe camera zoom <targets> <modifier>
+    private static LiteralArgumentBuilder<ServerCommandSource> camera() {
+        var camera = literal("camera");
+        var setDirection = literal("set_direction").then(argument("targets", EntityArgumentType.players()).then(argument("relative", BoolArgumentType.bool()).then(argument("x", FloatArgumentType.floatArg()).then(argument("y", FloatArgumentType.floatArg()).executes(ctx -> {
             var buf = PacketByteBufs.create();
             buf.writeBoolean(BoolArgumentType.getBool(ctx, "relative"));
             buf.writeFloat(FloatArgumentType.getFloat(ctx, "x"));
             buf.writeFloat(FloatArgumentType.getFloat(ctx, "y"));
-            EntityArgumentType.getPlayers(ctx, "targets").forEach(player -> ServerPlayNetworking.send(player, SyringeNetworking.SET_CAMERA_DIRECTION_ID, buf));
+            EntityArgumentType.getPlayers(ctx, "targets").forEach(player -> ServerPlayNetworking.send(player, SyringeNetworking.CAMERA_SET_DIRECTION_ID, buf));
             return 1;
         })))));
+        var zoom = literal("zoom").then(argument("targets", EntityArgumentType.players()).then(argument("multiplier", DoubleArgumentType.doubleArg()).executes(ctx -> {
+            var buf = PacketByteBufs.create();
+            buf.writeDouble(DoubleArgumentType.getDouble(ctx, "multiplier"));
+            EntityArgumentType.getPlayers(ctx, "targets").forEach(player -> ServerPlayNetworking.send(player, SyringeNetworking.CAMERA_ZOOM_ID, buf));
+            return 1;
+        })));
+        return camera.then(setDirection).then(zoom);
     }
 
     // syringe hud hide <targets> <hudPart>

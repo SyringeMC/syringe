@@ -35,7 +35,8 @@ public final class SyringeNetworking {
     public static final Identifier KEYBINDING_REGISTER_ID = new Identifier(NAMESPACE, "keybinding/register");
     public static final Identifier PERSPECTIVE_SET_ID = new Identifier(NAMESPACE, "perspective/set");
     public static final Identifier PERSPECTIVE_LOCK_ID = new Identifier(NAMESPACE, "perspective/lock");
-    public static final Identifier SET_CAMERA_DIRECTION_ID = new Identifier(NAMESPACE, "set_camera_direction");
+    public static final Identifier CAMERA_SET_DIRECTION_ID = new Identifier(NAMESPACE, "camera/set_direction");
+    public static final Identifier CAMERA_ZOOM_ID = new Identifier(NAMESPACE, "camera/zoom");
     public static final Identifier HUD_HIDE_ID = new Identifier(NAMESPACE, "hud/hide");
     public static final Identifier HUD_SHOW_ID = new Identifier(NAMESPACE, "hud/show");
 
@@ -54,7 +55,8 @@ public final class SyringeNetworking {
         ClientPlayNetworking.registerGlobalReceiver(KEYBINDING_REGISTER_ID, SyringeNetworking::registerKeybindings);
         ClientPlayNetworking.registerGlobalReceiver(PERSPECTIVE_SET_ID, SyringeNetworking::setPerspective);
         ClientPlayNetworking.registerGlobalReceiver(PERSPECTIVE_LOCK_ID, SyringeNetworking::lockPerspective);
-        ClientPlayNetworking.registerGlobalReceiver(SET_CAMERA_DIRECTION_ID, SyringeNetworking::setCameraDirection);
+        ClientPlayNetworking.registerGlobalReceiver(CAMERA_SET_DIRECTION_ID, SyringeNetworking::setCameraDirection);
+        ClientPlayNetworking.registerGlobalReceiver(CAMERA_ZOOM_ID, SyringeNetworking::zoom);
         ClientPlayNetworking.registerGlobalReceiver(HUD_HIDE_ID, SyringeNetworking::hudHide);
         ClientPlayNetworking.registerGlobalReceiver(HUD_SHOW_ID, SyringeNetworking::hudShow);
     }
@@ -124,6 +126,10 @@ public final class SyringeNetworking {
             player.setYaw(yaw + x);
             player.setPitch(pitch + y);
         }
+    }
+
+    private static void zoom(MinecraftClient client, ClientPlayNetworkHandler handler, PacketByteBuf buf, PacketSender sender) {
+        SyringeMod.zoom = buf.readDouble();
     }
 
     private static void hudHide(MinecraftClient client, ClientPlayNetworkHandler handler, PacketByteBuf buf, PacketSender sender) {
