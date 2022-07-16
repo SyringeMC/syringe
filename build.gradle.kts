@@ -5,7 +5,7 @@ plugins {
 group = "org.syringemc"
 version = "0.1.0+1.19"
 
-tasks.getByName<ProcessResources>("processResources") {
+tasks.processResources {
     filesMatching("fabric.mod.json") {
         expand(mutableMapOf("version" to project.version))
     }
@@ -41,7 +41,7 @@ dependencies {
         "fabric-resource-loader-v0",
         "fabric-key-binding-api-v1",
         "fabric-networking-api-v1",
-    ).forEach { includeAndModImplementation(fabricApi.module(it, "0.57.0+1.19")) }
+    ).forEach { modImplementation(fabricApi.module(it, "0.57.0+1.19")) }
 }
 
 loom {
