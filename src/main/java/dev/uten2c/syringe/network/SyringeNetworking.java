@@ -39,6 +39,9 @@ public final class SyringeNetworking {
     private static final Logger LOGGER = LoggerFactory.getLogger(SyringeNetworking.class);
     public static final Map<String, MessageInstance> MESSAGES = new HashMap<>();
 
+    // Login
+    public static final Identifier HANDSHAKE_ID = new Identifier(NAMESPACE, "handshake");
+
     // S2C
     public static final Identifier MESSAGE_DISPLAY_ID = new Identifier(NAMESPACE, "message/display");
     public static final Identifier MESSAGE_DISCARD_ID = new Identifier(NAMESPACE, "message/discard");
@@ -52,7 +55,6 @@ public final class SyringeNetworking {
     public static final Identifier HUD_SHOW_ID = new Identifier(NAMESPACE, "hud/show");
 
     // C2S
-    public static final Identifier HANDSHAKE_ID = new Identifier(NAMESPACE, "handshake");
     public static final Identifier KEYBINDING_PRESSED_ID = new Identifier(NAMESPACE, "keybinding/pressed");
     public static final Identifier KEYBINDING_RELEASED_ID = new Identifier(NAMESPACE, "keybinding/released");
 
