@@ -22,6 +22,7 @@ sourceSets {
 
 repositories {
     mavenCentral()
+    maven("https://jitpack.io")
 }
 
 fun DependencyHandlerScope.includeAndModImplementation(dep: Any) {
@@ -42,6 +43,8 @@ dependencies {
         "fabric-key-binding-api-v1",
         "fabric-networking-api-v1",
     ).forEach { modImplementation(fabricApi.module(it, "0.57.0+1.19")) }
+    implementation("com.github.LlamaLad7:MixinExtras:0.0.11")
+    annotationProcessor("com.github.LlamaLad7:MixinExtras:0.0.11")
 }
 
 loom {

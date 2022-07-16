@@ -1,6 +1,8 @@
 package dev.uten2c.syringe.network;
 
+import com.google.common.collect.Sets;
 import dev.uten2c.syringe.SyringeMod;
+import dev.uten2c.syringe.hud.HudPart;
 import dev.uten2c.syringe.keybinding.KeyBindingManager;
 import dev.uten2c.syringe.keybinding.KeyCode;
 import dev.uten2c.syringe.message.MessageContext;
@@ -34,6 +36,8 @@ public final class SyringeNetworking {
     public static final Identifier PERSPECTIVE_SET_ID = new Identifier(NAMESPACE, "perspective/set");
     public static final Identifier PERSPECTIVE_LOCK_ID = new Identifier(NAMESPACE, "perspective/lock");
     public static final Identifier SET_CAMERA_DIRECTION_ID = new Identifier(NAMESPACE, "set_camera_direction");
+    public static final Identifier HUD_HIDE_ID = new Identifier(NAMESPACE, "hud/hide");
+    public static final Identifier HUD_SHOW_ID = new Identifier(NAMESPACE, "hud/show");
 
     // C2S
     public static final Identifier HANDSHAKE_ID = new Identifier(NAMESPACE, "handshake");
@@ -51,6 +55,8 @@ public final class SyringeNetworking {
         ClientPlayNetworking.registerGlobalReceiver(PERSPECTIVE_SET_ID, SyringeNetworking::setPerspective);
         ClientPlayNetworking.registerGlobalReceiver(PERSPECTIVE_LOCK_ID, SyringeNetworking::lockPerspective);
         ClientPlayNetworking.registerGlobalReceiver(SET_CAMERA_DIRECTION_ID, SyringeNetworking::setCameraDirection);
+        ClientPlayNetworking.registerGlobalReceiver(HUD_HIDE_ID, SyringeNetworking::hudHide);
+        ClientPlayNetworking.registerGlobalReceiver(HUD_SHOW_ID, SyringeNetworking::hudShow);
     }
 
     private static void displayMessage(MinecraftClient client, ClientPlayNetworkHandler handler, PacketByteBuf buf, PacketSender sender) {
@@ -118,6 +124,16 @@ public final class SyringeNetworking {
             player.setYaw(yaw + x);
             player.setPitch(pitch + y);
         }
+    }
+
+    private static void hudHide(MinecraftClient client, ClientPlayNetworkHandler handler, PacketByteBuf buf, PacketSender sender) {
+        var hudParts = buf.readCollection(Sets::newHashSetWithExpectedSize, b -> b.readEnumConstant(HudPart.class));
+        SyringeMod.hidedHudParts.addAll(hudParts);
+    }
+
+    private static void hudShow(MinecraftClient client, ClientPlayNetworkHandler handler, PacketByteBuf buf, PacketSender sender) {
+        var hudParts = buf.readCollection(Sets::newHashSetWithExpectedSize, b -> b.readEnumConstant(HudPart.class));
+        SyringeMod.hidedHudParts.removeAll(hudParts);
     }
 
     public static void sendKeyPressedPacket(KeyBinding keyBinding) {

@@ -3,6 +3,7 @@ package dev.uten2c.syringe.testmod;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.*;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import dev.uten2c.syringe.command.argument.HudPartArgumentType;
 import dev.uten2c.syringe.command.argument.MessagePositionArgumentType;
 import dev.uten2c.syringe.network.SyringeNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
@@ -10,8 +11,11 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.command.argument.TextArgumentType;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
+
+import java.util.EnumSet;
 
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
@@ -25,6 +29,7 @@ public final class SyringeCommand {
             .then(message())
             .then(perspective())
             .then(setCameraDirection())
+            .then(hud())
         );
     }
 
@@ -96,5 +101,24 @@ public final class SyringeCommand {
             EntityArgumentType.getPlayers(ctx, "targets").forEach(player -> ServerPlayNetworking.send(player, SyringeNetworking.SET_CAMERA_DIRECTION_ID, buf));
             return 1;
         })))));
+    }
+
+    // syringe hud hide <targets> <hudPart>
+    // syringe hud show <targets> <hudPart>
+    private static LiteralArgumentBuilder<ServerCommandSource> hud() {
+        var hud = literal("hud");
+        var hide = literal("hide").then(argument("targets", EntityArgumentType.players()).then(argument("part", HudPartArgumentType.hudPart()).executes(ctx -> {
+            var buf = PacketByteBufs.create();
+            buf.writeCollection(EnumSet.of(HudPartArgumentType.getHudPart(ctx, "part")), PacketByteBuf::writeEnumConstant);
+            EntityArgumentType.getPlayers(ctx, "targets").forEach(player -> ServerPlayNetworking.send(player, SyringeNetworking.HUD_HIDE_ID, buf));
+            return 1;
+        })));
+        var show = literal("show").then(argument("targets", EntityArgumentType.players()).then(argument("part", HudPartArgumentType.hudPart()).executes(ctx -> {
+            var buf = PacketByteBufs.create();
+            buf.writeCollection(EnumSet.of(HudPartArgumentType.getHudPart(ctx, "part")), PacketByteBuf::writeEnumConstant);
+            EntityArgumentType.getPlayers(ctx, "targets").forEach(player -> ServerPlayNetworking.send(player, SyringeNetworking.HUD_SHOW_ID, buf));
+            return 1;
+        })));
+        return hud.then(hide).then(show);
     }
 }

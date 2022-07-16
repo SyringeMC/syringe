@@ -13,6 +13,9 @@
     "issues": "https://github.com/uTen2c/syringe/issues"
   },
   "entrypoints": {
+    "preLaunch": [
+      "dev.uten2c.syringe.MixinExtrasInitializer"
+    ],
     "main": [
       "dev.uten2c.syringe.SyringeMod"
     ]
