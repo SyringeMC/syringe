@@ -13,6 +13,11 @@
     "defaultRequire": 1
   },
   "client": [
-    "hud.MixinInGameHud"
+    "hud.MixinInGameHud",
+    "item.MixinClientPlayerEntity",
+    "item.MixinClientPlayerInteractionManager",
+    "item.MixinGameRenderer",
+    "item.MixinHandledScreen",
+    "item.MixinHeldItemFeatureRenderer"
   ]
 }
