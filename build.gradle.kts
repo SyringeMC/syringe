@@ -2,7 +2,7 @@ plugins {
     id("fabric-loom") version "0.12-SNAPSHOT"
 }
 
-val protocolVersion = 1;
+val protocolVersion = 0;
 
 group = "dev.uten2c"
 version = "0.1.0+1.19"
