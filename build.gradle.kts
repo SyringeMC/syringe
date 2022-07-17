@@ -2,7 +2,7 @@ plugins {
     id("fabric-loom") version "0.12-SNAPSHOT"
 }
 
-val protocolVersion = 0;
+val protocolVersion = 0
 
 group = "dev.uten2c"
 version = "0.1.0+1.19"
@@ -37,6 +37,11 @@ fun DependencyHandlerScope.includeAndModImplementation(dep: Any) {
     include(dep)
 }
 
+fun DependencyHandlerScope.includeAndImplementation(dep: Any) {
+    implementation(dep)
+    include(dep)
+}
+
 dependencies {
     minecraft("com.mojang:minecraft:1.19")
     mappings(group = "net.fabricmc", name = "yarn", version = "1.19+build.4", classifier = "v2")
@@ -50,7 +55,7 @@ dependencies {
         "fabric-key-binding-api-v1",
         "fabric-networking-api-v1",
     ).forEach { modImplementation(fabricApi.module(it, "0.57.0+1.19")) }
-    implementation("com.github.LlamaLad7:MixinExtras:0.0.11")
+    includeAndImplementation("com.github.LlamaLad7:MixinExtras:0.0.11")
     annotationProcessor("com.github.LlamaLad7:MixinExtras:0.0.11")
 }
 
