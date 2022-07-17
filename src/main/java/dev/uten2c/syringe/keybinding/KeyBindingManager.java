@@ -1,6 +1,7 @@
 package dev.uten2c.syringe.keybinding;
 
 import com.google.common.collect.Lists;
+import dev.uten2c.syringe.SyringeMod;
 import dev.uten2c.syringe.io.SaveDataManager;
 import dev.uten2c.syringe.mixin.accessor.KeyBindingRegistryImplAccessor;
 import dev.uten2c.syringe.network.SyringeNetworking;
@@ -24,8 +25,7 @@ public final class KeyBindingManager {
 
     public static void setup() {
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
-            var server = MinecraftClient.getInstance().getServer();
-            if (server == null) {
+            if (!SyringeMod.isInSyringeServer) {
                 return;
             }
             KEY_BINDINGS.forEach(keybinding -> {
