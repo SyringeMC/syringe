@@ -5,6 +5,8 @@
   "compatibilityLevel": "JAVA_17",
   "mixins": [
     "accessor.KeyBindingRegistryImplAccessor",
+    "item.MixinAbstractBlockState",
+    "item.MixinPlayerEntity",
     "keybinding.MixinGameOptions",
     "message.MixinInGameHud",
     "perspective.MixinGameOptions"
