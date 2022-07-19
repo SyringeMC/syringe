@@ -16,8 +16,7 @@ public final class KeybindingTest {
     private static final List<Keybinding> KEY_BINDINGS = List.of(
         new Keybinding(new Identifier("testmod", "test1"), KeyCode.R),
         new Keybinding(new Identifier("testmod", "test2"), KeyCode.C),
-        new Keybinding("key.testmod.test3", KeyCode.I),
-        new Keybinding("key.attack")
+        new Keybinding(new Identifier("testmod", "attack"), "key.attack")
     );
 
     private KeybindingTest() {
@@ -27,12 +26,12 @@ public final class KeybindingTest {
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> registerKeyBinding(handler.player));
 
         ServerPlayNetworking.registerGlobalReceiver(SyringeNetworking.KEYBINDING_PRESSED_ID, (server, player, handler, buf, responseSender) -> {
-            var id = buf.readString();
+            var id = buf.readIdentifier();
             player.sendMessage(Text.of("Pressed: " + id), false);
         });
 
         ServerPlayNetworking.registerGlobalReceiver(SyringeNetworking.KEYBINDING_RELEASED_ID, (server, player, handler, buf, responseSender) -> {
-            var id = buf.readString();
+            var id = buf.readIdentifier();
             player.sendMessage(Text.of("Released: " + id), false);
         });
     }
@@ -40,6 +39,7 @@ public final class KeybindingTest {
     private static void registerKeyBinding(ServerPlayerEntity player) {
         var buf = PacketByteBufs.create();
         buf.writeCollection(KEY_BINDINGS, (buf1, entry) -> {
+            buf1.writeIdentifier(entry.id);
             buf1.writeString(entry.translateKey);
             buf1.writeEnumConstant(entry.keyCode);
         });
@@ -47,20 +47,18 @@ public final class KeybindingTest {
     }
 
     private static class Keybinding {
+        private final @NotNull Identifier id;
         private final @NotNull String translateKey;
         private final @NotNull KeyCode keyCode;
 
-        Keybinding(Identifier id, @NotNull KeyCode keyCode) {
+        Keybinding(@NotNull Identifier id, @NotNull KeyCode keyCode) {
+            this.id = id;
             this.translateKey = String.format("key.%s.%s", id.getNamespace(), id.getPath());
             this.keyCode = keyCode;
         }
 
-        Keybinding(@NotNull String translateKey, @NotNull KeyCode keyCode) {
-            this.translateKey = translateKey;
-            this.keyCode = keyCode;
-        }
-
-        Keybinding(@NotNull String translateKey) {
+        Keybinding(@NotNull Identifier id, @NotNull String translateKey) {
+            this.id = id;
             this.translateKey = translateKey;
             this.keyCode = KeyCode.ESCAPE;
         }

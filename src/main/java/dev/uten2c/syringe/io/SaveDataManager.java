@@ -54,14 +54,23 @@ public final class SaveDataManager {
         }
     }
 
-    public static Optional<Integer> getInt(@NotNull String key) {
+    public static Optional<Double> getDouble(@NotNull String key) {
         try {
             var value = dataMap.get(key);
-            return value == null ? Optional.empty() : Optional.of((int) (double) value);
-        } catch (ClassCastException e) {
+            if (value == null) {
+                return Optional.empty();
+            } else {
+                return Optional.of(Double.parseDouble(value.toString()));
+            }
+        } catch (NumberFormatException e) {
             e.printStackTrace();
             return Optional.empty();
         }
+    }
+
+    public static Optional<Integer> getInt(@NotNull String key) {
+        var opt = getDouble(key);
+        return opt.map(value -> (int) (double) value);
     }
 
     public static void save() {
