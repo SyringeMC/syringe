@@ -17,8 +17,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 public final class KeyBindingManager {
-    private static final Set<KeyBinding> KEY_BINDINGS = new HashSet<>();
-    private static final Set<KeyBinding> PRESSING_KEYS = new HashSet<>();
+    private static final Set<KeybindingEntry> KEY_BINDING_ENTRIES = new HashSet<>();
+    private static final Set<KeybindingEntry> PRESSING_KEY_ENTRIES = new HashSet<>();
 
     private KeyBindingManager() {
     }
@@ -28,34 +28,31 @@ public final class KeyBindingManager {
             if (!SyringeMod.isInSyringeServer) {
                 return;
             }
-            KEY_BINDINGS.forEach(keybinding -> {
-                if (keybinding.isPressed()) {
-                    if (!PRESSING_KEYS.contains(keybinding)) {
-                        PRESSING_KEYS.add(keybinding);
-                        pressed(keybinding);
+            KEY_BINDING_ENTRIES.forEach(entry -> {
+                if (entry.keyBinding().isPressed()) {
+                    if (!PRESSING_KEY_ENTRIES.contains(entry)) {
+                        PRESSING_KEY_ENTRIES.add(entry);
+                        pressed(entry);
                     }
                 } else {
-                    if (PRESSING_KEYS.contains(keybinding)) {
-                        PRESSING_KEYS.remove(keybinding);
-                        released(keybinding);
+                    if (PRESSING_KEY_ENTRIES.contains(entry)) {
+                        PRESSING_KEY_ENTRIES.remove(entry);
+                        released(entry);
                     }
                 }
             });
         });
     }
 
-    public static void register(@NotNull String translateKey, @NotNull KeyCode defaultKey) {
-        var keybinding = KeyBinding.KEYS_BY_ID.get(translateKey);
-        if (keybinding == null) {
-            keybinding = new SyringeKeyBinding(translateKey, defaultKey);
-        }
-        if (keybinding instanceof SyringeKeyBinding syringeKeybinding) {
+    public static void register(@NotNull KeybindingEntry entry) {
+        var keyBinding = entry.keyBinding();
+        if (keyBinding instanceof SyringeKeyBinding syringeKeybinding) {
             KeyBindingHelper.registerKeyBinding(syringeKeybinding);
-            SaveDataManager.getInt(translateKey)
+            SaveDataManager.getInt(entry.id().toTranslationKey("key"))
                 .ifPresent(code -> syringeKeybinding.setBoundKey(InputUtil.Type.KEYSYM.createFromCode(code), false));
         }
 
-        KEY_BINDINGS.add(keybinding);
+        KEY_BINDING_ENTRIES.add(entry);
         var client = MinecraftClient.getInstance();
         client.options.allKeys = KeyBindingRegistryImpl.process(client.options.allKeys);
         KeyBinding.updateKeysByCode();
@@ -64,21 +61,22 @@ public final class KeyBindingManager {
     public static void reset() {
         var client = MinecraftClient.getInstance();
         var newList = Lists.newArrayList(client.options.allKeys);
-        KEY_BINDINGS.stream()
-            .filter(keyBinding -> keyBinding instanceof SyringeKeyBinding)
+        KEY_BINDING_ENTRIES.stream()
+            .filter(entry -> entry.keyBinding() instanceof SyringeKeyBinding)
+            .map(entry -> (SyringeKeyBinding) entry.keyBinding())
             .forEach(keyBinding -> {
                 newList.remove(keyBinding);
                 KeyBindingRegistryImplAccessor.getModdedKeyBindings().remove(keyBinding);
             });
-        KEY_BINDINGS.clear();
+        KEY_BINDING_ENTRIES.clear();
         client.options.allKeys = newList.toArray(new KeyBinding[0]);
     }
 
-    private static void pressed(KeyBinding keyBinding) {
-        SyringeNetworking.sendKeyPressedPacket(keyBinding);
+    private static void pressed(KeybindingEntry entry) {
+        SyringeNetworking.sendKeyPressedPacket(entry);
     }
 
-    private static void released(KeyBinding keyBinding) {
-        SyringeNetworking.sendKeyReleasedPacket(keyBinding);
+    private static void released(KeybindingEntry entry) {
+        SyringeNetworking.sendKeyReleasedPacket(entry);
     }
 }
