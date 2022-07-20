@@ -21,6 +21,7 @@
     "item.MixinClientPlayerInteractionManager",
     "item.MixinGameRenderer",
     "item.MixinHandledScreen",
-    "item.MixinHeldItemFeatureRenderer"
+    "item.MixinHeldItemFeatureRenderer",
+    "keybinding.MixinControlsListWidget"
   ]
 }

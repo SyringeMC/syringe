@@ -5,8 +5,10 @@ import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 
 public class SyringeKeyBinding extends KeyBinding {
+    public static final String CATEGORY = "__syringe__";
+
     public SyringeKeyBinding(String translateKey, KeyCode keyCode) {
-        super(translateKey, keyCode.getCode(), "Syringe");
+        super(translateKey, keyCode.getCode(), CATEGORY);
     }
 
     @Override
