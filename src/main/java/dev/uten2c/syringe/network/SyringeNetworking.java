@@ -29,7 +29,6 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -138,11 +137,8 @@ public final class SyringeNetworking {
     }
 
     private static void setPerspective(MinecraftClient client, ClientPlayNetworkHandler handler, PacketByteBuf buf, PacketSender sender) {
-        var id = buf.readInt();
-        Arrays.stream(Perspective.values())
-            .filter(p -> p.ordinal() == id)
-            .findFirst()
-            .ifPresent(p -> ((ExtendedGameOptions) client.options).setPerspective(p, true));
+        var perspective = buf.readEnumConstant(Perspective.class);
+        ((ExtendedGameOptions) client.options).setPerspective(perspective, true);
     }
 
     private static void lockPerspective(MinecraftClient client, ClientPlayNetworkHandler handler, PacketByteBuf buf, PacketSender sender) {
