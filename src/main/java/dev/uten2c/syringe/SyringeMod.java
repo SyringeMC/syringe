@@ -1,7 +1,9 @@
 package dev.uten2c.syringe;
 
+import com.mojang.brigadier.arguments.ArgumentType;
 import dev.uten2c.syringe.command.argument.HudPartArgumentType;
 import dev.uten2c.syringe.command.argument.MessagePositionArgumentType;
+import dev.uten2c.syringe.command.argument.PerspectiveArgumentType;
 import dev.uten2c.syringe.hud.HudPart;
 import dev.uten2c.syringe.io.SaveDataManager;
 import dev.uten2c.syringe.keybinding.KeyBindingManager;
@@ -14,6 +16,7 @@ import net.minecraft.util.Identifier;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Supplier;
 
 public final class SyringeMod implements ModInitializer {
     public static boolean isPerspectiveLocked = false;
@@ -27,17 +30,9 @@ public final class SyringeMod implements ModInitializer {
         SyringeNetworking.registerReceivers();
         KeyBindingManager.setup();
 
-        ArgumentTypeRegistry.registerArgumentType(
-            new Identifier("syringe", "position"),
-            MessagePositionArgumentType.class,
-            ConstantArgumentSerializer.of(MessagePositionArgumentType::messagePosition)
-        );
-        ArgumentTypeRegistry.registerArgumentType(
-            new Identifier("syringe", "hud_part"),
-            HudPartArgumentType.class,
-            ConstantArgumentSerializer.of(HudPartArgumentType::hudPart)
-        );
-
+        registerArgumentType(new Identifier("syringe", "position"), MessagePositionArgumentType.class, MessagePositionArgumentType::messagePosition);
+        registerArgumentType(new Identifier("syringe", "hud_part"), HudPartArgumentType.class, HudPartArgumentType::hudPart);
+        registerArgumentType(new Identifier("syringe", "perspective"), PerspectiveArgumentType.class, PerspectiveArgumentType::perspective);
         ClientPlayConnectionEvents.DISCONNECT.register((handler, server) -> onDisconnected());
     }
 
@@ -48,5 +43,9 @@ public final class SyringeMod implements ModInitializer {
         hidedHudParts.clear();
         zoom = 1.0;
         isInSyringeServer = false;
+    }
+
+    private static <T extends ArgumentType<?>> void registerArgumentType(Identifier id, Class<T> clazz, Supplier<T> typeSupplier) {
+        ArgumentTypeRegistry.registerArgumentType(id, clazz, ConstantArgumentSerializer.of(typeSupplier));
     }
 }

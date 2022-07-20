@@ -5,6 +5,7 @@ import com.mojang.brigadier.arguments.*;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import dev.uten2c.syringe.command.argument.HudPartArgumentType;
 import dev.uten2c.syringe.command.argument.MessagePositionArgumentType;
+import dev.uten2c.syringe.command.argument.PerspectiveArgumentType;
 import dev.uten2c.syringe.network.SyringeNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -73,12 +74,11 @@ public final class SyringeCommand {
     // syringe perspective lock <targets> <boolean>
     private static LiteralArgumentBuilder<ServerCommandSource> perspective() {
         var perspective = literal("perspective");
-        var set = literal("set").then(argument("targets", EntityArgumentType.players()).then(argument("id", IntegerArgumentType.integer(0, 2)).executes(ctx -> {
-            var id = IntegerArgumentType.getInteger(ctx, "id");
+        var set = literal("set").then(argument("targets", EntityArgumentType.players()).then(argument("perspective", PerspectiveArgumentType.perspective()).executes(ctx -> {
             var buf = PacketByteBufs.create();
-            buf.writeInt(id);
+            buf.writeEnumConstant(PerspectiveArgumentType.getPerspective(ctx, "perspective"));
             EntityArgumentType.getPlayers(ctx, "targets").forEach(player -> ServerPlayNetworking.send(player, SyringeNetworking.PERSPECTIVE_SET_ID, buf));
-            return id;
+            return 1;
         })));
         var lock = literal("lock").then(argument("targets", EntityArgumentType.players()).then(argument("lock", BoolArgumentType.bool()).executes(ctx -> {
             var buf = PacketByteBufs.create();
