@@ -54,6 +54,7 @@ public final class SyringeNetworking {
     public static final Identifier CAMERA_LOCK_ID = new Identifier(NAMESPACE, "camera/lock");
     public static final Identifier HUD_HIDE_ID = new Identifier(NAMESPACE, "hud/hide");
     public static final Identifier HUD_SHOW_ID = new Identifier(NAMESPACE, "hud/show");
+    public static final Identifier MOVEMENT_LOCK_ID = new Identifier(NAMESPACE, "movement/lock");
 
     // C2S
     public static final Identifier KEYBINDING_PRESSED_ID = new Identifier(NAMESPACE, "keybinding/pressed");
@@ -75,6 +76,7 @@ public final class SyringeNetworking {
         ClientPlayNetworking.registerGlobalReceiver(CAMERA_LOCK_ID, SyringeNetworking::lockCamera);
         ClientPlayNetworking.registerGlobalReceiver(HUD_HIDE_ID, SyringeNetworking::hudHide);
         ClientPlayNetworking.registerGlobalReceiver(HUD_SHOW_ID, SyringeNetworking::hudShow);
+        ClientPlayNetworking.registerGlobalReceiver(MOVEMENT_LOCK_ID, SyringeNetworking::lockMovement);
     }
 
     private static CompletableFuture<@Nullable PacketByteBuf> handshake(MinecraftClient client, ClientLoginNetworkHandler handler, PacketByteBuf buf, Consumer<GenericFutureListener<? extends Future<? super Void>>> listenerAdder) {
@@ -176,6 +178,10 @@ public final class SyringeNetworking {
     private static void hudShow(MinecraftClient client, ClientPlayNetworkHandler handler, PacketByteBuf buf, PacketSender sender) {
         var hudParts = buf.readCollection(Sets::newHashSetWithExpectedSize, b -> b.readEnumConstant(HudPart.class));
         SyringeMod.hidedHudParts.removeAll(hudParts);
+    }
+
+    private static void lockMovement(MinecraftClient client, ClientPlayNetworkHandler handler, PacketByteBuf buf, PacketSender sender) {
+        SyringeMod.movementLock = buf.readBoolean();
     }
 
     public static void sendKeyPressedPacket(KeybindingEntry entry) {

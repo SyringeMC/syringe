@@ -24,6 +24,7 @@ public final class SyringeMod implements ModInitializer {
     public static float zoom = 1f;
     public static boolean isInSyringeServer = false;
     public static boolean cameraLock = false;
+    public static boolean movementLock = false;
 
     @Override
     public void onInitialize() {
@@ -45,6 +46,7 @@ public final class SyringeMod implements ModInitializer {
         zoom = 1f;
         isInSyringeServer = false;
         cameraLock = false;
+        movementLock = false;
     }
 
     private static <T extends ArgumentType<?>> void registerArgumentType(Identifier id, Class<T> clazz, Supplier<T> typeSupplier) {

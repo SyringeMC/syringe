@@ -31,6 +31,7 @@ public final class SyringeCommand {
             .then(perspective())
             .then(camera())
             .then(hud())
+            .then(movement())
         );
     }
 
@@ -136,5 +137,15 @@ public final class SyringeCommand {
             return 1;
         })));
         return hud.then(hide).then(show);
+    }
+
+    private static LiteralArgumentBuilder<ServerCommandSource> movement() {
+        var lock = literal("lock").then(argument("targets", EntityArgumentType.players()).then(argument("lock", BoolArgumentType.bool()).executes(ctx -> {
+            var buf = PacketByteBufs.create();
+            buf.writeBoolean(BoolArgumentType.getBool(ctx, "lock"));
+            EntityArgumentType.getPlayers(ctx, "targets").forEach(player -> ServerPlayNetworking.send(player, SyringeNetworking.MOVEMENT_LOCK_ID, buf));
+            return 1;
+        })));
+        return literal("movement").then(lock);
     }
 }

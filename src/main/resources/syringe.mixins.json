@@ -23,6 +23,7 @@
     "item.MixinGameRenderer",
     "item.MixinHandledScreen",
     "item.MixinHeldItemFeatureRenderer",
-    "keybinding.MixinControlsListWidget"
+    "keybinding.MixinControlsListWidget",
+    "movement.MixinKeyboardInput"
   ]
 }
