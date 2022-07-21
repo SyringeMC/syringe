@@ -31,8 +31,8 @@ public final class SyringeMod implements ModInitializer {
         KeyBindingManager.setup();
 
         registerArgumentType(new Identifier("syringe", "position"), MessagePositionArgumentType.class, MessagePositionArgumentType::messagePosition);
-        registerArgumentType(new Identifier("syringe", "hud_part"), HudPartArgumentType.class, HudPartArgumentType::hudPart);
         registerArgumentType(new Identifier("syringe", "perspective"), PerspectiveArgumentType.class, PerspectiveArgumentType::perspective);
+        registerArgumentType(new Identifier("syringe", "hud_part"), HudPartArgumentType.class, HudPartArgumentType::hudPart);
         ClientPlayConnectionEvents.DISCONNECT.register((handler, server) -> onDisconnected());
     }
 
