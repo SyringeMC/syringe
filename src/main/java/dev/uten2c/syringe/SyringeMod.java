@@ -23,6 +23,7 @@ public final class SyringeMod implements ModInitializer {
     public static Set<HudPart> hidedHudParts = new HashSet<>();
     public static float zoom = 1f;
     public static boolean isInSyringeServer = false;
+    public static boolean cameraLock = false;
 
     @Override
     public void onInitialize() {
@@ -43,6 +44,7 @@ public final class SyringeMod implements ModInitializer {
         hidedHudParts.clear();
         zoom = 1f;
         isInSyringeServer = false;
+        cameraLock = false;
     }
 
     private static <T extends ArgumentType<?>> void registerArgumentType(Identifier id, Class<T> clazz, Supplier<T> typeSupplier) {

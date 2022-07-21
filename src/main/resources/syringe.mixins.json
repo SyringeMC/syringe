@@ -16,6 +16,7 @@
   },
   "client": [
     "camera.MixinGameRenderer",
+    "camera.MixinMouse",
     "hud.MixinInGameHud",
     "item.MixinClientPlayerEntity",
     "item.MixinClientPlayerInteractionManager",

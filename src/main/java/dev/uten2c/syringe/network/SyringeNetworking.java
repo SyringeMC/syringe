@@ -51,6 +51,7 @@ public final class SyringeNetworking {
     public static final Identifier PERSPECTIVE_LOCK_ID = new Identifier(NAMESPACE, "perspective/lock");
     public static final Identifier CAMERA_SET_DIRECTION_ID = new Identifier(NAMESPACE, "camera/set_direction");
     public static final Identifier CAMERA_ZOOM_ID = new Identifier(NAMESPACE, "camera/zoom");
+    public static final Identifier CAMERA_LOCK_ID = new Identifier(NAMESPACE, "camera/lock");
     public static final Identifier HUD_HIDE_ID = new Identifier(NAMESPACE, "hud/hide");
     public static final Identifier HUD_SHOW_ID = new Identifier(NAMESPACE, "hud/show");
 
@@ -71,6 +72,7 @@ public final class SyringeNetworking {
         ClientPlayNetworking.registerGlobalReceiver(PERSPECTIVE_LOCK_ID, SyringeNetworking::lockPerspective);
         ClientPlayNetworking.registerGlobalReceiver(CAMERA_SET_DIRECTION_ID, SyringeNetworking::setCameraDirection);
         ClientPlayNetworking.registerGlobalReceiver(CAMERA_ZOOM_ID, SyringeNetworking::zoom);
+        ClientPlayNetworking.registerGlobalReceiver(CAMERA_LOCK_ID, SyringeNetworking::lockCamera);
         ClientPlayNetworking.registerGlobalReceiver(HUD_HIDE_ID, SyringeNetworking::hudHide);
         ClientPlayNetworking.registerGlobalReceiver(HUD_SHOW_ID, SyringeNetworking::hudShow);
     }
@@ -160,6 +162,10 @@ public final class SyringeNetworking {
 
     private static void zoom(MinecraftClient client, ClientPlayNetworkHandler handler, PacketByteBuf buf, PacketSender sender) {
         SyringeMod.zoom = buf.readFloat();
+    }
+
+    private static void lockCamera(MinecraftClient client, ClientPlayNetworkHandler handler, PacketByteBuf buf, PacketSender sender) {
+        SyringeMod.cameraLock = buf.readBoolean();
     }
 
     private static void hudHide(MinecraftClient client, ClientPlayNetworkHandler handler, PacketByteBuf buf, PacketSender sender) {

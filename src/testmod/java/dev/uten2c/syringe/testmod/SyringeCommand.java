@@ -93,6 +93,7 @@ public final class SyringeCommand {
 
     // syringe camera set_direction <targets> <isRelative> <x> <y>
     // syringe camera zoom <targets> <modifier>
+    // syringe camera lock <targets> <lock>
     private static LiteralArgumentBuilder<ServerCommandSource> camera() {
         var camera = literal("camera");
         var setDirection = literal("set_direction").then(argument("targets", EntityArgumentType.players()).then(argument("relative", BoolArgumentType.bool()).then(argument("x", FloatArgumentType.floatArg()).then(argument("y", FloatArgumentType.floatArg()).executes(ctx -> {
@@ -109,7 +110,13 @@ public final class SyringeCommand {
             EntityArgumentType.getPlayers(ctx, "targets").forEach(player -> ServerPlayNetworking.send(player, SyringeNetworking.CAMERA_ZOOM_ID, buf));
             return 1;
         })));
-        return camera.then(setDirection).then(zoom);
+        var lock = literal("lock").then(argument("targets", EntityArgumentType.players()).then(argument("lock", BoolArgumentType.bool()).executes(ctx -> {
+            var buf = PacketByteBufs.create();
+            buf.writeBoolean(BoolArgumentType.getBool(ctx, "lock"));
+            EntityArgumentType.getPlayers(ctx, "targets").forEach(player -> ServerPlayNetworking.send(player, SyringeNetworking.CAMERA_LOCK_ID, buf));
+            return 1;
+        })));
+        return camera.then(setDirection).then(zoom).then(lock);
     }
 
     // syringe hud hide <targets> <hudPart>
