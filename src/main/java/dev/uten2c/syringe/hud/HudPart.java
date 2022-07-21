@@ -1,6 +1,10 @@
 package dev.uten2c.syringe.hud;
 
 public enum HudPart {
+    SPYGLASS_OVERLAY,
+    PUMPKIN_OVERLAY,
+    POWDER_SNOW_OUTLINE_OVERLAY,
+    PORTAL_OVERLAY,
     HOTBAR,
     CROSSHAIR,
     BOSS_BAR,
@@ -13,4 +17,6 @@ public enum HudPart {
     EXPERIENCE_BAR,
     HELD_ITEM_TOOLTIP,
     STATUS_EFFECT_OVERLAY,
+    SCOREBOARD_SIDEBAR,
+    PLAYER_LIST_HUD,
 }

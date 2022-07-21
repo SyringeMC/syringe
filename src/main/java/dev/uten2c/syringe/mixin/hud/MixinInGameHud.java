@@ -6,14 +6,39 @@ import dev.uten2c.syringe.hud.HudPart;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.hud.BossBarHud;
 import net.minecraft.client.gui.hud.InGameHud;
+import net.minecraft.client.gui.hud.PlayerListHud;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.scoreboard.Scoreboard;
+import net.minecraft.scoreboard.ScoreboardObjective;
+import net.minecraft.util.Identifier;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Slice;
 
 @Mixin(InGameHud.class)
 public abstract class MixinInGameHud extends DrawableHelper {
+    @WrapWithCondition(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/InGameHud;renderSpyglassOverlay(F)V"))
+    private boolean renderSpyglassOverlay(InGameHud instance, float scale) {
+        return !SyringeMod.hidedHudParts.contains(HudPart.SPYGLASS_OVERLAY);
+    }
+
+    @WrapWithCondition(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/InGameHud;renderOverlay(Lnet/minecraft/util/Identifier;F)V", ordinal = 0))
+    private boolean renderPumpkinOverlay(InGameHud instance, Identifier texture, float opacity) {
+        return !SyringeMod.hidedHudParts.contains(HudPart.PUMPKIN_OVERLAY);
+    }
+
+    @WrapWithCondition(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/InGameHud;renderOverlay(Lnet/minecraft/util/Identifier;F)V", ordinal = 1))
+    private boolean renderPowderSnowOutlineOverlay(InGameHud instance, Identifier texture, float opacity) {
+        return !SyringeMod.hidedHudParts.contains(HudPart.POWDER_SNOW_OUTLINE_OVERLAY);
+    }
+
+    @WrapWithCondition(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/InGameHud;renderPortalOverlay(F)V"))
+    private boolean renderPortalOverlay(InGameHud instance, float nauseaStrength) {
+        return !SyringeMod.hidedHudParts.contains(HudPart.PORTAL_OVERLAY);
+    }
+
     @WrapWithCondition(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/InGameHud;renderHotbar(FLnet/minecraft/client/util/math/MatrixStack;)V"))
     private boolean renderHotbar(InGameHud instance, float tickDelta, MatrixStack matrices) {
         return !SyringeMod.hidedHudParts.contains(HudPart.HOTBAR);
@@ -93,5 +118,15 @@ public abstract class MixinInGameHud extends DrawableHelper {
     @WrapWithCondition(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/InGameHud;renderStatusEffectOverlay(Lnet/minecraft/client/util/math/MatrixStack;)V"))
     private boolean renderStatusEffectOverlay(InGameHud instance, MatrixStack matrices) {
         return !SyringeMod.hidedHudParts.contains(HudPart.STATUS_EFFECT_OVERLAY);
+    }
+
+    @WrapWithCondition(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/InGameHud;renderScoreboardSidebar(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/scoreboard/ScoreboardObjective;)V"))
+    private boolean renderScoreboardSidebar(InGameHud instance, MatrixStack matrices, ScoreboardObjective objective) {
+        return !SyringeMod.hidedHudParts.contains(HudPart.SCOREBOARD_SIDEBAR);
+    }
+
+    @WrapWithCondition(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/PlayerListHud;render(Lnet/minecraft/client/util/math/MatrixStack;ILnet/minecraft/scoreboard/Scoreboard;Lnet/minecraft/scoreboard/ScoreboardObjective;)V"))
+    private boolean renderPlayerListHud(PlayerListHud instance, MatrixStack matrices, int scaledWindowWidth, Scoreboard scoreboard, @Nullable ScoreboardObjective objective) {
+        return !SyringeMod.hidedHudParts.contains(HudPart.PLAYER_LIST_HUD);
     }
 }
