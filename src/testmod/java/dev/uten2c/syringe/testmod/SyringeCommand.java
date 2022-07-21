@@ -103,9 +103,9 @@ public final class SyringeCommand {
             EntityArgumentType.getPlayers(ctx, "targets").forEach(player -> ServerPlayNetworking.send(player, SyringeNetworking.CAMERA_SET_DIRECTION_ID, buf));
             return 1;
         })))));
-        var zoom = literal("zoom").then(argument("targets", EntityArgumentType.players()).then(argument("multiplier", DoubleArgumentType.doubleArg()).executes(ctx -> {
+        var zoom = literal("zoom").then(argument("targets", EntityArgumentType.players()).then(argument("multiplier", FloatArgumentType.floatArg()).executes(ctx -> {
             var buf = PacketByteBufs.create();
-            buf.writeDouble(DoubleArgumentType.getDouble(ctx, "multiplier"));
+            buf.writeFloat(FloatArgumentType.getFloat(ctx, "multiplier"));
             EntityArgumentType.getPlayers(ctx, "targets").forEach(player -> ServerPlayNetworking.send(player, SyringeNetworking.CAMERA_ZOOM_ID, buf));
             return 1;
         })));

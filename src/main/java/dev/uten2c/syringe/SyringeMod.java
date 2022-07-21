@@ -21,7 +21,7 @@ import java.util.function.Supplier;
 public final class SyringeMod implements ModInitializer {
     public static boolean isPerspectiveLocked = false;
     public static Set<HudPart> hidedHudParts = new HashSet<>();
-    public static double zoom = 1.0;
+    public static float zoom = 1f;
     public static boolean isInSyringeServer = false;
 
     @Override
@@ -41,7 +41,7 @@ public final class SyringeMod implements ModInitializer {
         KeyBindingManager.reset();
         isPerspectiveLocked = false;
         hidedHudParts.clear();
-        zoom = 1.0;
+        zoom = 1f;
         isInSyringeServer = false;
     }
 

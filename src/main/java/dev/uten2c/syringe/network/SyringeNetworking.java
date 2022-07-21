@@ -159,7 +159,7 @@ public final class SyringeNetworking {
     }
 
     private static void zoom(MinecraftClient client, ClientPlayNetworkHandler handler, PacketByteBuf buf, PacketSender sender) {
-        SyringeMod.zoom = buf.readDouble();
+        SyringeMod.zoom = buf.readFloat();
     }
 
     private static void hudHide(MinecraftClient client, ClientPlayNetworkHandler handler, PacketByteBuf buf, PacketSender sender) {
